@@ -1,0 +1,334 @@
+/* Navbar branding */
+  .navbar-brand span {
+    color: #1479FF;
+  }
+
+  .navbar-brand{
+    margin-left: 100px;
+  }
+
+  .nav-menu .nav-link {
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: #ccc;
+    position: relative;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  }
+  
+  .nav-menu .nav-link:hover,
+  .nav-menu .nav-link.active {
+    color: #ffffff;
+  }
+  
+  .nav-menu .nav-link::after {
+    content: '';
+    display: block;
+    width: 0%;
+    height: 2px;
+    background-color: #1479FF;
+    transition: width 0.3s ease;
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+  }
+  
+  .nav-menu .nav-link:hover::after,
+  .nav-menu .nav-link.active::after {
+    width: 100%;
+  }
+
+  form[role="search"] input {
+    width: 100%;
+  }
+
+  .form-control{
+    margin-right: 100px;
+  }
+
+  
+
+  /* Perbaiki posisi logo dan toggle di mobile */
+/* Mobile-First Styling */
+@media (max-width: 767.98px) {
+  .navbar-brand {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar .navbar-brand img {
+    position: absolute;
+    left: 1rem;
+  }
+
+  .navbar-toggler {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .navbar .container-fluid {
+    justify-content: center;
+    position: relative;
+  }
+
+
+  .offcanvas.offcanvas-end {
+    height: auto !important;
+    max-height: 70vh;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  .offcanvas-end.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+  .offcanvas-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+  }
+
+  .offcanvas-title {
+    font-weight: 700;
+    color: #FFB800;
+    font-size: 1.1rem;
+  }
+
+  .offcanvas-body {
+    padding: 0.5rem 1rem;
+  }
+
+  
+
+  .offcanvas-body .nav-link {
+    display: block;
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    margin: 0.2rem 0;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
+
+  .offcanvas-body .nav-link:hover {
+    background-color: rgba(255, 184, 0, 0.15);
+    padding-left: 0.75rem;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .navbar-nav .nav-link:last-child {
+    border-bottom: none;
+  }
+
+  form[role="search"] {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .form-control {
+    width: 100%;
+  }
+}
+
+
+/* Default: Tampilkan normal di desktop */
+/* Container Tab Styling */
+.nav-tabs {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
+  border: none;
+  padding: 10px;
+  background: linear-gradient(135deg, #0B2447, #19376D);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Tab Item Styling */
+.nav-tabs .nav-link {
+  position: relative;
+  color: #FFB800;
+  margin: 0 8px;
+  padding: 10px 20px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+/* Hover & Active State */
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link.active {
+  color: #0B2447;
+  background: #FFB800;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+#team-name {
+      color: #0B2447;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-out;
+    }
+
+    #team-info {
+      color: #34495e;
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+      animation: fadeIn 1.5s ease-out;
+    }
+
+    .table-container {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px;
+      animation: fadeIn 2s ease-out;
+    }
+
+    .table-container table {
+    min-width: 600px;
+    }
+
+    table th {
+      background-color: #0B2447;
+      color: #FFB800;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    table td {
+      text-align: center;
+      background-color: #ffffff;
+      border-bottom: 1px solid #f1f1f1;
+      font-size: 1.1rem;
+    }
+
+    table tbody tr:first-child {
+      background-color: #FFF8E1;
+      font-weight: bold;
+    }
+
+    table tbody tr:hover {
+      background-color: #f1f1f1;
+      transform: scale(1.01);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn-primary {
+      background-color: #0B2447;
+      color: #FFB800;
+      border: 2px solid #FFB800;
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #FFB800;
+      color: #0B2447;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 767.98px) {
+  #team-name {
+    font-size: 1.8rem;
+  }
+  #team-info {
+    font-size: 0.95rem;
+  }
+  table th, table td {
+    font-size: 0.75rem;
+    padding: 5px;
+  }
+
+
+  .nav-tabs .nav-item {
+    flex: 1 1 50%; /* 2 kolom per baris, bisa diubah jadi 20% untuk 5 tab */
+    text-align: center;
+  }
+
+  .nav-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .nav-tabs .nav-link {
+    flex: 1 1 calc(50% - 16px); /* 2 kolom rapi */
+    margin: 4px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    text-align: center;
+    min-width: auto; /* Hindari lebar paksa */
+  }
+}
+
+
+        /* Footer */
+  footer {
+  background-color: #0A0F2C;
+  color: #ffffff;
+  }
+
+  footer h5 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  footer p, footer a {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #ccc;
+  }
+  
+  footer a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive tweaks */
+  @media (max-width: 768px) {
+    .carousel-caption h5 {
+      font-size: 16px;
+    }
+  
+    .carousel-caption p {
+      font-size: 12px;
+    }
+  }
+        
