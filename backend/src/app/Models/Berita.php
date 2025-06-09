@@ -2,31 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Berita extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'category_id',
         'user_id',
         'judul',
         'credit_foto',
-        'slug',
         'deskripsi',
         'gambar',
         'status',
         'tanggal_publish',
+        'views',
     ];
 
-    public function categories()
+    // Relasi ke kategori liga
+    public function category()
     {
-        return $this->belongsTo(Categories::class);
+        return $this->belongsTo(Category::class);
     }
 
+    // Relasi ke penulis
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relasi ke tabel rekomendasi
+    public function rekomendasi()
+    {
+        return $this->hasOne(Rekomendasi::class);
     }
 }

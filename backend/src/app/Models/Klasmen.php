@@ -2,27 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Klasmen extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'category_id',
-        'team_id',
-        'jumlah_pertandingan',
-        'menang',
-        'seri',
-        'kalah',
-        'selisih_gol',
-        'poin',
+        'category_id', 'nama_tim', 'jumlah_pertandingan',
+        'menang', 'seri', 'kalah', 'selisih_gol', 'poin'
     ];
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsTo(Categories::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function team()
