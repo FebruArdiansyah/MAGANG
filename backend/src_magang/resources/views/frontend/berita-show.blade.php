@@ -7,7 +7,7 @@
 
 <main class="container py-5">
   <section class="py-0">
-    <div class="container d-flex gap-4 flex-wrap flex-lg-nowrap">
+    <div class="container d-flex gap-4 flex-wrap flex-lg-nowrap align-items-start">
       <!-- Artikel -->
       <article class="flex-grow-1 pe-lg-4 article-content">
         <h1>{{ $berita->judul }}</h1>

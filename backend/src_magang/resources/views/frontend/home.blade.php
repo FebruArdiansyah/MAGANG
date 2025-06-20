@@ -81,8 +81,8 @@
   </table>
 @endforeach
 
-    <div class="text-center mt-3">
-      <a href="{{ route('klasmen.index') }}" class="btn btn-primary fw-bold">Selengkapnya</a>
+    <div class="text-center">
+      <a href="{{ route('klasmen.index') }}" class="btn btn-primary fw-bold" style="margin-top: 10px">Selengkapnya</a>
     </div>
   </div>
 </div>
