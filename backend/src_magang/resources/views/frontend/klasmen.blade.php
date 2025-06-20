@@ -40,8 +40,8 @@
                             @foreach ($kategori->klasmen as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->nama_klub }}</td>
-                                    <td>{{ $item->main }}</td>
+                                    <td>{{ $item->nama_tim }}</td>
+                                    <td>{{ $item->jumlah_pertandingan }}</td>
                                     <td>{{ $item->menang }}</td>
                                     <td>{{ $item->seri }}</td>
                                     <td>{{ $item->kalah }}</td>

@@ -5,84 +5,63 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
 use App\Models\Rekomendasi;
-use App\Models\Klasmen;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\View\View;
+use App\Models\Category;
 
 class HomeController extends Controller
 {
-    /**
-     * Tampilkan halaman beranda.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function __invoke(): View
+    public function __invoke()
     {
-        // 1) Carousel: 4 berita terbaru
-        $beritaCarousel = Cache::remember(
-            'home:carousel',
-            now()->addMinutes(5),
-            fn () => Berita::published()
-                          ->latestFirst()
-                          ->with('category', 'user')
-                          ->limit(4)
-                          ->get()
-        );
+        // Ambil berita utama (maks 3) → is_utama = true
+        $beritaCarousel = Berita::published()
+            ->where('is_utama', true)
+            ->latestFirst()
+            ->take(3)
+            ->get();
 
-        // 2) Sub-banner: 4 berita berikutnya
-        $subBanner = Cache::remember(
-            'home:subBanner',
-            now()->addMinutes(5),
-            fn () => Berita::published()
-                          ->latestFirst()
-                          ->with('category', 'user')
-                          ->skip(4)
-                          ->limit(4)
-                          ->get()
-        );
+        // Ambil ID berita utama
+        $utamaIds = $beritaCarousel->pluck('id')->toArray();
 
-        // 3) Rekomendasi: 6 entri dari tabel rekomendasis
-        $rekomendasi = Cache::remember(
-            'home:rekomendasi',
-            now()->addMinutes(10),
-            fn () => Rekomendasi::with([
-                                'berita.category',
-                                'berita.user',
-                                'category',
-                            ])
-                            ->latest()
-                            ->limit(6)
-                            ->get()
-        );
+        // Ambil berita sorotan (maks 4) → is_sorotan = true & tidak termasuk yang utama
+        $subBanner = Berita::published()
+            ->where('is_sorotan', true)
+            ->when(count($utamaIds), function ($query) use ($utamaIds) {
+                return $query->whereNotIn('id', $utamaIds);
+            })
+            ->latestFirst()
+            ->take(4)
+            ->get();
 
-        // 4) Terpopuler: 5 berita dengan views terbanyak
-        $terpopuler = Cache::remember(
-            'home:terpopuler',
-            now()->addMinutes(10),
-            fn () => Berita::published()
-                          ->with('category')
-                          ->orderByDesc('views')
-                          ->limit(5)
-                          ->get()
-        );
+        // Ambil berita rekomendasi (dari relasi Rekomendasi)
+        $rekomendasi = Rekomendasi::with(['berita.category', 'berita.user'])
+            ->latest()
+            ->take(6)
+            ->get();
 
-        // 5) Klasemen Top-5 untuk Liga Nasional (category_id = 1)
-        $klasmenTop5 = Cache::remember(
-            'home:klasmenTop5',
-            now()->addMinutes(30),
-            fn () => Klasmen::where('category_id', 1)
-                            ->orderByDesc('poin')
-                            ->orderByDesc('selisih_gol')
-                            ->limit(5)
-                            ->get()
-        );
+        // Ambil berita terpopuler berdasarkan views
+        $terpopuler = Berita::published()
+            ->orderByDesc('views')
+            ->take(5)
+            ->get();
+
+        // Ambil klasemen untuk 5 liga
+        $kategoriList = Category::whereIn('nama_liga', [
+            'Liga Indonesia',
+            'Liga Inggris',
+            'Liga Italia',
+            'Liga Spanyol',
+            'Liga Jerman'
+        ])
+        ->with(['klasmen' => function ($q) {
+            $q->orderByDesc('poin')->take(5);
+        }])
+        ->get();
 
         return view('frontend.home', compact(
             'beritaCarousel',
             'subBanner',
             'rekomendasi',
             'terpopuler',
-            'klasmenTop5'
+            'kategoriList'
         ));
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
 use App\Models\Berita;
 use Illuminate\View\View;
+use App\Models\Rekomendasi;
+use App\Http\Controllers\Controller;
 
 class BeritaController extends Controller
 {
@@ -29,7 +30,6 @@ class BeritaController extends Controller
     $berita->increment('views');
     $berita->load('category', 'user');
 
-    // Berita terkait dari kategori yang sama, selain berita ini
     $beritaTerkait = Berita::published()
         ->where('category_id', $berita->category_id)
         ->where('id', '!=', $berita->id)
@@ -37,9 +37,21 @@ class BeritaController extends Controller
         ->take(5)
         ->get();
 
+    $rekomendasi = Rekomendasi::with(['berita.category', 'berita.user'])
+        ->latest()
+        ->take(6)
+        ->get();
+
+    $terpopuler = Berita::published()
+        ->orderByDesc('views')
+        ->take(5)
+        ->get();
+
     return view('frontend.berita-show', [
         'berita' => $berita,
         'beritaTerkait' => $beritaTerkait,
+        'rekomendasi' => $rekomendasi,
+        'terpopuler' => $terpopuler,
     ]);
 }
 }

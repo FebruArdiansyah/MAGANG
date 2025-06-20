@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\BeritaController;
 use App\Http\Controllers\Frontend\KlasmenController;
+use App\Http\Controllers\Frontend\CategoryController;
 use App\Http\Controllers\Frontend\KategoriController;
 
 /* NOTE: Do Not Remove
@@ -24,9 +25,8 @@ Route::get('/', HomeController::class)
     ->name('home');
 
 // Detail Berita (SEO-friendly slug)
-Route::get('/berita/{slug}', [BeritaController::class, 'show'])
-    ->name('berita.show');
+Route::get('/berita/{berita:slug}', [BeritaController::class, 'show'])->name('berita.show');
 
-    Route::get('/liga/{slug}', [KategoriController::class, 'show'])->name('kategori.show');
+Route::get('/liga/{slug}', [CategoryController::class, 'show'])->name('liga.show');
 
 Route::get('/klasmen', [KlasmenController::class, 'index'])->name('klasmen.index');

@@ -7,22 +7,20 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Rekomendasi;
-use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
+use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\RekomendasiResource\Pages;
-use App\Filament\Admin\Resources\RekomendasiResource\RelationManagers;
 
 class RekomendasiResource extends Resource
 {
     protected static ?string $model = Rekomendasi::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-sparkles'; // ikon bintang
+    protected static ?string $navigationIcon  = 'heroicon-o-sparkles';
     protected static ?string $navigationGroup = 'Konten';
     protected static ?int    $navigationSort  = 12;
-    protected static ?string $label          = 'Rekomendasi';
-    protected static ?string $pluralLabel    = 'Daftar Rekomendasi';
+    protected static ?string $label           = 'Rekomendasi';
+    protected static ?string $pluralLabel     = 'Daftar Rekomendasi';
 
     public static function form(Form $form): Form
     {
@@ -30,29 +28,28 @@ class RekomendasiResource extends Resource
             ->schema([
                 Forms\Components\Card::make()
                     ->schema([
-                        Forms\Components\Select::make('category_id')
-                            ->label('Kategori Liga')
-                            ->relationship('category', 'nama_liga')
-                            ->searchable()
-                            ->required()
-                            ->columnSpanFull(),
-
                         Forms\Components\Select::make('berita_id')
                             ->label('Berita')
-                            ->relationship(
-                                'berita',
-                                'judul',
-                                modifyQueryUsing: fn (Builder $query) => $query->where('status', 'publikasi')
-                            )
+                            ->options(function (callable $get) {
+                                $kategoriId = $get('category_id');
+
+                                return \App\Models\Berita::published()
+                                    ->where('is_utama', false)
+                                    ->where('is_sorotan', false)
+                                    ->whereDoesntHave('rekomendasis', function ($query) use ($kategoriId) {
+                                        if ($kategoriId) {
+                                            $query->where('category_id', $kategoriId);
+                                        }
+                                    })
+                                    ->when($kategoriId, function ($query) use ($kategoriId) {
+                                        $query->where('category_id', $kategoriId);
+                                    })
+                                    ->pluck('judul', 'id');
+                            })
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->rules([
-                                fn (Forms\Get $get, ?\App\Models\Rekomendasi $record = null) => Rule::unique('rekomendasis', 'berita_id')
-                                    ->where(fn ($q) => $q->where('category_id', $get('category_id')))
-                                    ->ignore($record?->id),
-                            ])
-                            ->hint('Hanya berita berstatus “publikasi” yang muncul di sini')
+                            ->hint('Hanya berita “publikasi”, belum direkomendasikan, dan bukan headline/sorotan')
                             ->columnSpanFull(),
                     ])
                     ->columns(1)
@@ -70,13 +67,10 @@ class RekomendasiResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('berita.gambar')
                     ->label('Foto')
+                    ->disk('public')
                     ->size(50)
                     ->extraImgAttributes(['class' => 'rounded-md'])
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\BadgeColumn::make('category.nama_liga')
-                    ->label('Kategori')
-                    ->colors(['primary' => fn ($state) => true]),
 
                 Tables\Columns\TextColumn::make('berita.judul')
                     ->label('Judul Berita')
@@ -84,6 +78,10 @@ class RekomendasiResource extends Resource
                     ->sortable()
                     ->wrap()
                     ->weight('semibold'),
+
+                Tables\Columns\BadgeColumn::make('category.nama_liga')
+                    ->label('Kategori')
+                    ->colors(['primary' => fn ($state) => true]),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Ditambahkan')
@@ -108,19 +106,23 @@ class RekomendasiResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['berita', 'category']);
+    }
+
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRekomendasis::route('/'),
+            'index'  => Pages\ListRekomendasis::route('/'),
             'create' => Pages\CreateRekomendasi::route('/create'),
-            'edit' => Pages\EditRekomendasi::route('/{record}/edit'),
+            'edit'   => Pages\EditRekomendasi::route('/{record}/edit'),
         ];
     }
 }

@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('status', ['draft', 'publikasi'])->default('draft');
             $table->timestamp('tanggal_publish')->nullable();
             $table->unsignedBigInteger('views')->default(0);
+            $table->boolean('is_utama')->default(false);
+            $table->boolean('is_sorotan')->default(false);
             $table->timestamps();
         });
     }

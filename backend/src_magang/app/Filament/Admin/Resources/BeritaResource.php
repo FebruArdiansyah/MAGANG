@@ -18,7 +18,7 @@ class BeritaResource extends Resource
 {
     protected static ?string $model = Berita::class;
 
-     protected static ?string $navigationIcon  = 'heroicon-o-newspaper';
+    protected static ?string $navigationIcon  = 'heroicon-o-newspaper';
     protected static ?string $navigationGroup = 'Konten';
     protected static ?int    $navigationSort  = 11;
     protected static ?string $label          = 'Berita';
@@ -27,11 +27,10 @@ class BeritaResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(1) // full‑width karena kita pakai Tabs di dalam
+            ->columns(1)
             ->schema([
                 Forms\Components\Tabs::make('Pengelolaan Berita')
                     ->tabs([
-                        /* ================== TAB: Konten ================== */
                         Forms\Components\Tabs\Tab::make('Konten')
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
@@ -61,7 +60,7 @@ class BeritaResource extends Resource
                                     ->imageResizeMode('cover')
                                     ->imagePreviewHeight('250')
                                     ->maxSize(2048)
-                                    ->helperText('Rasio disarankan 16:9, maksimal 2 MB.'),
+                                    ->helperText('Rasio disarankan 16:9, maksimal 2\u00a0MB.'),
 
                                 Forms\Components\TextInput::make('credit_foto')
                                     ->label('Kredit Foto')
@@ -69,14 +68,12 @@ class BeritaResource extends Resource
                                     ->columnSpanFull(),
                             ]),
 
-                        /* ================= TAB: Publikasi ================= */
                         Forms\Components\Tabs\Tab::make('Publikasi')
                             ->icon('heroicon-o-light-bulb')
                             ->schema([
                                 Forms\Components\Select::make('category_id')
                                     ->label('Kategori Liga')
                                     ->relationship('category', 'nama_liga')
-                                    ->searchable()
                                     ->required(),
 
                                 Forms\Components\Select::make('status')
@@ -89,9 +86,42 @@ class BeritaResource extends Resource
                                     ->required(),
 
                                 Forms\Components\DateTimePicker::make('tanggal_publish')
-                                    ->label('Tanggal Publish')
-                                    ->seconds(false)
+    ->label('Tanggal Publish')
+    ->default(now()) // otomatis isi sekarang
+    ->seconds(false)
                                     ->helperText('Isi jika ingin terbit otomatis di waktu tertentu.'),
+
+                                Forms\Components\Toggle::make('is_utama')
+                                    ->label('Tampilkan di Berita Utama (Carousel)')
+                                    ->helperText('Maksimal 3 berita bisa ditandai sebagai utama.')
+                                    ->default(false)
+                                    ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
+                                        if ($state) {
+                                            $count = \App\Models\Berita::where('is_utama', true)
+                                                ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                                                ->count();
+                                            if ($count >= 3) {
+                                                $set('is_utama', false);
+                                                notify()->error('Gagal: Maksimal 3 berita utama diperbolehkan.');
+                                            }
+                                        }
+                                    }),
+
+                                Forms\Components\Toggle::make('is_sorotan')
+                                    ->label('Tampilkan di Sorotan (Sub Banner)')
+                                    ->helperText('Maksimal 4 berita bisa ditandai sebagai sorotan.')
+                                    ->default(false)
+                                    ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
+                                        if ($state) {
+                                            $count = \App\Models\Berita::where('is_sorotan', true)
+                                                ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                                                ->count();
+                                            if ($count >= 4) {
+                                                $set('is_sorotan', false);
+                                                notify()->error('Gagal: Maksimal 4 berita sorotan diperbolehkan.');
+                                            }
+                                        }
+                                    }),
 
                                 Forms\Components\Placeholder::make('views')
                                     ->label('Jumlah Views')
@@ -104,7 +134,6 @@ class BeritaResource extends Resource
                     ])
                     ->columnSpanFull(),
 
-                // Hidden user_id
                 Forms\Components\Hidden::make('user_id')
                     ->default(fn() => auth()->id()),
             ]);
@@ -156,6 +185,14 @@ class BeritaResource extends Resource
                     ->label('👁️')
                     ->alignRight()
                     ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_utama')
+                    ->label('Utama')
+                    ->boolean(),
+
+                Tables\Columns\IconColumn::make('is_sorotan')
+                    ->label('Sorotan')
+                    ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -166,6 +203,16 @@ class BeritaResource extends Resource
                 Tables\Filters\SelectFilter::make('category_id')
                     ->label('Kategori')
                     ->relationship('category', 'nama_liga'),
+                Tables\Filters\TernaryFilter::make('is_utama')
+                    ->label('Berita Utama')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
+                Tables\Filters\TernaryFilter::make('is_sorotan')
+                    ->label('Berita Sorotan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([

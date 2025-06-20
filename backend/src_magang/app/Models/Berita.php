@@ -21,6 +21,8 @@ class Berita extends Model
         'status',
         'tanggal_publish',
         'views',
+        'is_utama',
+        'is_sorotan',
     ];
 
     protected $casts = [
@@ -64,11 +66,12 @@ class Berita extends Model
     /* ----------------------- Scopes ----------------------- */
 
     public function scopePublished($query)
-    {
-        return $query->where('status', 'publikasi')
-                     ->whereNotNull('tanggal_publish')
-                     ->where('tanggal_publish', '<=', now());
-    }
+{
+    return $query->where('status', 'publikasi')
+                 ->whereNotNull('tanggal_publish')
+                 ->where('tanggal_publish', '<=', now()->addMinutes(1)); // toleransi 1 menit
+}
+
 
     public function scopeLatestFirst($query)
     {

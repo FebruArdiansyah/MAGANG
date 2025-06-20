@@ -48,7 +48,6 @@ class KlasmenResource extends Resource
                 Forms\Components\Select::make('category_id')
                     ->label('Liga')
                     ->relationship('category', 'nama_liga')
-                    ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('nama_tim')
