@@ -56,8 +56,9 @@ class UserResource extends Resource
                             ->required(),
                         Forms\Components\FileUpload::make('avatar_url')
                             ->label('Avatar')
+                            ->disk('public')
                             ->image()
-                            ->optimize('webp')
+                            ->maxSize(2048)
                             ->imageEditor()
                             ->imagePreviewHeight('250')
                             ->panelAspectRatio('7:2')

@@ -49,6 +49,41 @@
     margin-right: 100px;
   }
 
+  #searchForm {
+  position: relative;
+}
+
+#searchResults {
+  position: absolute;
+  top: 100%; /* ⬅ posisikan tepat di bawah input */
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.875rem;
+  background-color: #fff;
+  z-index: 1050;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  display: none;
+}
+
+#searchResults a {
+  padding: 8px 12px;
+  display: block;
+  border-bottom: 1px solid #f1f1f1;
+  color: #222;
+}
+
+#searchResults a:last-child {
+  border-bottom: none;
+}
+
+#searchResults a:hover {
+  background-color: #f9f9f9;
+}
+
   
 
   /* Perbaiki posisi logo dan toggle di mobile */

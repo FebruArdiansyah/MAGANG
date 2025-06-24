@@ -6,6 +6,7 @@ use App\Models\Berita;
 use Illuminate\View\View;
 use App\Models\Rekomendasi;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class BeritaController extends Controller
 {
@@ -54,4 +55,25 @@ class BeritaController extends Controller
         'terpopuler' => $terpopuler,
     ]);
 }
+
+public function searchAjax(Request $request)
+{
+    $query = $request->input('q');
+
+    $beritas = Berita::with('category')
+        ->published()
+        ->where('judul', 'like', "%{$query}%")
+        ->orderByDesc('tanggal_publish')
+        ->limit(5)
+        ->get();
+
+    return response()->json($beritas->map(function ($berita) {
+        return [
+            'judul'    => $berita->judul,
+            'slug'     => $berita->slug,
+            'category' => $berita->category->nama ?? '-',
+        ];
+    }));
+}
+
 }

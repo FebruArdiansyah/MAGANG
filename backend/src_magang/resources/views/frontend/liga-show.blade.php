@@ -59,34 +59,37 @@
   {{-- REKOMENDASI --}}
   <section class="layout-rekomendasi section-rekomendasi-anda row mb-5">
   <div class="col-lg-8 rekomendasi-anda">
-    <h3 class="text-center text-lg-start mb-3">Rekomendasi Untuk Anda</h3>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      @foreach ($rekomendasis as $rekomendasi)
+  <h3 class="text-center text-lg-start mb-3">Rekomendasi Untuk Anda</h3>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach ($rekomendasis as $rekomendasi)
       <div class="col">
         <a href="{{ route('berita.show', $rekomendasi->berita->slug) }}" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm border-0">
-            <img src="{{ asset('storage/' . $rekomendasi->berita->gambar) }}" class="card-img-top img-fluid" alt="..." style="object-fit: cover;">
+            <div class="image-wrapper">
+              <img src="{{ asset('storage/' . $rekomendasi->berita->gambar) }}"  alt="{{ $rekomendasi->berita->judul }}">
+            </div>
             <div class="card-body">
-              <small class="">{{ $rekomendasi->category->nama }}</small>
+              <small>{{ $rekomendasi->category->nama }}</small>
               <h6 class="card-title fw-bold mb-2 card-title-limit">{{ $rekomendasi->berita->judul }}</h6>
-              <small class=" d-block mb-1">Oleh: {{ $rekomendasi->berita->user->name }}</small>
+              <small class="d-block mb-1">Oleh: {{ $rekomendasi->berita->user->name }}</small>
             </div>
             <div class="card-footer">
-              <small class="">{{ $rekomendasi->berita->tanggal_publish->format('l, j F Y') }}</small>
+              <small>{{ $rekomendasi->berita->tanggal_publish->format('l, j F Y') }}</small>
             </div>
           </div>
         </a>
       </div>
-      @endforeach
-    </div>
+    @endforeach
   </div>
+</div>
+
 
   <div class="col-lg-4 section-terpopuler">
     <h3 class="mb-3 fw-bold">Terpopuler</h3>
     <div class="list-group list-group-flush">
       @foreach ($terpopuler as $populer)
       <a href="{{ route('berita.show', $populer->slug) }}" class="list-group-item list-group-item-action d-flex gap-3 border-0 px-0 pb-3">
-        <img src="{{ asset('storage/' . $populer->gambar) }}" width="100" height="70" class="rounded object-fit-cover" alt="...">
+        <img src="{{ asset('storage/' . $populer->gambar) }}" class="rounded object-fit-cover" alt="...">
         <div>
           <small class="text-danger ">{{ $populer->category->nama }}</small>
           <h6 class="fw-bold mb-1">{{ $populer->judul }}</h6>

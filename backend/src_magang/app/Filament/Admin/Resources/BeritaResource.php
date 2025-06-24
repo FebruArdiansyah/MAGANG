@@ -8,6 +8,7 @@ use App\Models\Berita;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,119 +26,134 @@ class BeritaResource extends Resource
     protected static ?string $pluralLabel    = 'Berita';
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->columns(1)
-            ->schema([
-                Forms\Components\Tabs::make('Pengelolaan Berita')
-                    ->tabs([
-                        Forms\Components\Tabs\Tab::make('Konten')
-                            ->icon('heroicon-o-pencil-square')
-                            ->schema([
-                                Forms\Components\TextInput::make('judul')
-                                    ->label('Judul Berita')
-                                    ->placeholder('Contoh: Persib Juara Liga 1 2025')
-                                    ->live(onBlur: true)
-                                    ->required()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        $set('slug', Str::slug($state));
-                                    }),
+{
+    return $form
+        ->columns(1)
+        ->schema([
+            Forms\Components\Tabs::make('Pengelolaan Berita')
+                ->tabs([
+                    Forms\Components\Tabs\Tab::make('Konten')
+                        ->icon('heroicon-o-pencil-square')
+                        ->schema([
+                            Forms\Components\Select::make('category_id')
+                                ->label('Kategori Liga')
+                                ->relationship('category', 'nama_liga')
+                                ->required(),
 
-                                Forms\Components\RichEditor::make('deskripsi')
-                                    ->label('Isi Berita')
-                                    ->toolbarButtons([
-                                        'bold', 'italic', 'underline', 'strike', 'link', 'bulletList', 'orderedList',
-                                        'blockquote', 'codeBlock', 'h2', 'h3', 'align', 'redo', 'undo', 'attachFiles',
-                                    ])
-                                    ->fileAttachmentsDisk('public')
-                                    ->fileAttachmentsDirectory('berita-attachments')
-                                    ->required(),
+                            Forms\Components\TextInput::make('judul')
+                                ->label('Judul Berita')
+                                ->placeholder('Contoh: Persib Juara Liga 1 2025')
+                                ->live(onBlur: true)
+                                ->required()
+                                ->afterStateUpdated(fn ($state, callable $set) =>
+                                    $set('slug', Str::slug($state))
+                                ),
 
-                                Forms\Components\FileUpload::make('gambar')
-                                    ->label('Gambar Utama')
-                                    ->directory('berita')
-                                    ->image()
-                                    ->imageResizeMode('cover')
-                                    ->imagePreviewHeight('250')
-                                    ->maxSize(2048)
-                                    ->helperText('Rasio disarankan 16:9, maksimal 2\u00a0MB.'),
+                            Forms\Components\RichEditor::make('deskripsi')
+                                ->label('Isi Berita')
+                                ->toolbarButtons([
+                                    'bold', 'italic', 'underline', 'strike', 'link', 'bulletList', 'orderedList',
+                                    'blockquote', 'codeBlock', 'h2', 'h3', 'align', 'redo', 'undo', 'attachFiles',
+                                ])
+                                ->fileAttachmentsDisk('public')
+                                ->fileAttachmentsDirectory('berita-attachments')
+                                ->required(),
 
-                                Forms\Components\TextInput::make('credit_foto')
-                                    ->label('Kredit Foto')
-                                    ->placeholder('Nama Fotografer / Sumber')
-                                    ->columnSpanFull(),
-                            ]),
+                            Forms\Components\FileUpload::make('gambar')
+                                ->label('Gambar Utama')
+                                ->directory('berita')
+                                ->image()
+                                ->imageResizeMode('cover')
+                                ->imagePreviewHeight('250')
+                                ->maxSize(2048)
+                                ->helperText('Rasio disarankan 16:9, maksimal 2 MB.'),
 
-                        Forms\Components\Tabs\Tab::make('Publikasi')
-                            ->icon('heroicon-o-light-bulb')
-                            ->schema([
-                                Forms\Components\Select::make('category_id')
-                                    ->label('Kategori Liga')
-                                    ->relationship('category', 'nama_liga')
-                                    ->required(),
+                            Forms\Components\TextInput::make('credit_foto')
+                                ->label('Kredit Foto')
+                                ->placeholder('Nama Fotografer / Sumber')
+                                ->columnSpanFull(),
+                        ]),
 
-                                Forms\Components\Select::make('status')
-                                    ->label('Status')
-                                    ->options([
-                                        'draft'     => 'Draft',
-                                        'publikasi' => 'Publikasi',
-                                    ])
-                                    ->default('draft')
-                                    ->required(),
+                    Forms\Components\Tabs\Tab::make('Publikasi')
+                        ->icon('heroicon-o-light-bulb')
+                        ->schema([
+                            // ✅ Hanya admin bisa lihat & ubah status
+                            Forms\Components\Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'draft'     => 'Draft',
+                                    'publikasi' => 'Publikasi',
+                                ])
+                                ->default('draft')
+                                ->required()
+                                ->visible(fn () => !auth()->user()?->hasRole('Penulis')),
 
-                                Forms\Components\DateTimePicker::make('tanggal_publish')
-    ->label('Tanggal Publish')
-    ->default(now()) // otomatis isi sekarang
-    ->seconds(false)
-                                    ->helperText('Isi jika ingin terbit otomatis di waktu tertentu.'),
+                            // ✅ Penulis tetap isi draft secara hidden
+                            Forms\Components\Hidden::make('status')
+                                ->default('draft')
+                                ->dehydrated(true)
+                                ->visible(fn () => auth()->user()?->hasRole('Penulis')),
 
-                                Forms\Components\Toggle::make('is_utama')
-                                    ->label('Tampilkan di Berita Utama (Carousel)')
-                                    ->helperText('Maksimal 3 berita bisa ditandai sebagai utama.')
-                                    ->default(false)
-                                    ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
-                                        if ($state) {
-                                            $count = \App\Models\Berita::where('is_utama', true)
-                                                ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
-                                                ->count();
-                                            if ($count >= 3) {
-                                                $set('is_utama', false);
-                                                notify()->error('Gagal: Maksimal 3 berita utama diperbolehkan.');
-                                            }
+                            Forms\Components\DateTimePicker::make('tanggal_publish')
+                                ->label('Tanggal Publish')
+                                ->default(now())
+                                ->seconds(false)
+                                ->helperText('Isi jika ingin terbit otomatis di waktu tertentu.'),
+
+                            // ✅ is_utama hanya admin
+                            Forms\Components\Toggle::make('is_utama')
+                                ->label('Tampilkan di Berita Utama (Carousel)')
+                                ->helperText('Maksimal 3 berita bisa ditandai sebagai utama.')
+                                ->default(false)
+                                ->visible(fn () => !auth()->user()?->hasRole('Penulis'))
+                                ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
+                                    if ($state) {
+                                        $count = \App\Models\Berita::where('is_utama', true)
+                                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                                            ->count();
+                                        if ($count >= 3) {
+                                            $set('is_utama', false);
+                                            notify()->error('Gagal: Maksimal 3 berita utama diperbolehkan.');
                                         }
-                                    }),
+                                    }
+                                }),
 
-                                Forms\Components\Toggle::make('is_sorotan')
-                                    ->label('Tampilkan di Sorotan (Sub Banner)')
-                                    ->helperText('Maksimal 4 berita bisa ditandai sebagai sorotan.')
-                                    ->default(false)
-                                    ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
-                                        if ($state) {
-                                            $count = \App\Models\Berita::where('is_sorotan', true)
-                                                ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
-                                                ->count();
-                                            if ($count >= 4) {
-                                                $set('is_sorotan', false);
-                                                notify()->error('Gagal: Maksimal 4 berita sorotan diperbolehkan.');
-                                            }
+                            // ✅ is_sorotan hanya admin
+                            Forms\Components\Toggle::make('is_sorotan')
+                                ->label('Tampilkan di Sorotan (Sub Banner)')
+                                ->helperText('Maksimal 4 berita bisa ditandai sebagai sorotan.')
+                                ->default(false)
+                                ->visible(fn () => !auth()->user()?->hasRole('Penulis'))
+                                ->afterStateUpdated(function ($state, callable $set, $get, ?\App\Models\Berita $record) {
+                                    if ($state) {
+                                        $count = \App\Models\Berita::where('is_sorotan', true)
+                                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                                            ->count();
+                                        if ($count >= 4) {
+                                            $set('is_sorotan', false);
+                                            notify()->error('Gagal: Maksimal 4 berita sorotan diperbolehkan.');
                                         }
-                                    }),
+                                    }
+                                }),
 
-                                Forms\Components\Placeholder::make('views')
-                                    ->label('Jumlah Views')
-                                    ->content(fn($record) => $record?->views ?? 0),
+                            Forms\Components\Placeholder::make('views')
+                                ->label('Jumlah Views')
+                                ->content(fn($record) => $record?->views ?? 0),
 
-                                Forms\Components\Placeholder::make('created_at')
-                                    ->label('Dibuat pada')
-                                    ->content(fn($record) => $record ? $record->created_at->format('d M Y H:i') : '—'),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
+                            Forms\Components\Placeholder::make('created_at')
+                                ->label('Dibuat pada')
+                                ->content(fn($record) => $record ? $record->created_at->format('d M Y H:i') : '—'),
+                        ]),
+                ])
+                ->columnSpanFull(),
 
-                Forms\Components\Hidden::make('user_id')
-                    ->default(fn() => auth()->id()),
-            ]);
-    }
+            Forms\Components\Hidden::make('user_id')
+                ->default(fn () => auth()->id())
+                ->disabled()
+                ->dehydrated(true),
+        ]);
+}
+
 
     public static function table(Table $table): Table
     {
@@ -163,6 +179,11 @@ class BeritaResource extends Resource
                 Tables\Columns\TextColumn::make('category.nama_liga')
                     ->label('Kategori')
                     ->sortable(),
+                
+                Tables\Columns\TextColumn::make('user.name')
+                ->label('Penulis')
+                ->sortable()
+                ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
@@ -227,6 +248,40 @@ class BeritaResource extends Resource
                 ]),
             ]);
     }
+
+    public static function getEloquentQuery(): Builder
+{
+    $query = parent::getEloquentQuery();
+
+    // Boleh akses semua jika admin
+    if (Auth::user()?->hasRole('Penulis')) {
+    return $query->where('user_id', Auth::id());
+}
+
+    return $query;
+}
+
+public static function mutateFormDataBeforeCreate(array $data): array
+{
+    if (auth()->user()?->hasRole('Penulis')) {
+        $data['status'] = 'draft';
+        $data['is_utama'] = false;
+        $data['is_sorotan'] = false;
+    }
+
+    return $data;
+}
+
+public static function mutateFormDataBeforeSave(array $data): array
+{
+    if (auth()->user()?->hasRole('Penulis')) {
+        $data['status'] = 'draft';
+        $data['is_utama'] = false;
+        $data['is_sorotan'] = false;
+    }
+
+    return $data;
+}
 
     public static function getRelations(): array
     {

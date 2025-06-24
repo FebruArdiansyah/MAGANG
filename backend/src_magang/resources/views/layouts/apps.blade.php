@@ -45,9 +45,10 @@
 
   
         <!-- Search (Kanan) -->
-        <form class="d-block d-lg-flex" role="search" style="min-width: 200px;">
-          <input class="form-control form-control-sm" type="search" placeholder="Cari berita..." aria-label="Search">
-        </form>
+        <form id="searchForm" class="d-block d-lg-flex" role="search" style="min-width: 200px;">
+        <input id="searchInput" class="form-control form-control-sm" type="search" placeholder="Cari berita...">
+        <div id="searchResults"></div>
+      </form>
       </div>
   
     </div>

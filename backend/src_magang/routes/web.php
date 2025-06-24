@@ -30,3 +30,5 @@ Route::get('/berita/{berita:slug}', [BeritaController::class, 'show'])->name('be
 Route::get('/liga/{slug}', [CategoryController::class, 'show'])->name('liga.show');
 
 Route::get('/klasmen', [KlasmenController::class, 'index'])->name('klasmen.index');
+
+Route::get('/search-json', [\App\Http\Controllers\Frontend\BeritaController::class, 'searchAjax'])->name('berita.search.ajax');

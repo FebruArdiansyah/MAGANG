@@ -62,6 +62,42 @@ form[role="search"] input:focus {
   margin-right: 100px;
 }
 
+#searchForm {
+  position: relative;
+}
+
+#searchResults {
+  position: absolute;
+  top: 100%; /* ⬅ posisikan tepat di bawah input */
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.875rem;
+  background-color: #fff;
+  z-index: 1050;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  display: none;
+}
+
+#searchResults a {
+  padding: 8px 12px;
+  display: block;
+  border-bottom: 1px solid #f1f1f1;
+  color: #222;
+}
+
+#searchResults a:last-child {
+  border-bottom: none;
+}
+
+#searchResults a:hover {
+  background-color: #f9f9f9;
+}
+
+
 
 /* ========================= */
 /* MOBILE NAVBAR STYLING */
@@ -405,6 +441,22 @@ form[role="search"] input:focus {
   color: #555;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+.section-rekomendasi-anda .image-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+}
+
+.section-rekomendasi-anda .image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  object-position: top center; 
 }
 
 /* Responsive */

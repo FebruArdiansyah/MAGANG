@@ -30,8 +30,8 @@ class Category extends Model
         return $this->hasMany(Klasmen::class);
     }
 
-    public function recommendation()
+    public function rekomendasi()
     {
-        return $this->hasMany(Recommendation::class);
+        return $this->hasMany(Rekomendasi::class);
     }
 }

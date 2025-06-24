@@ -117,7 +117,9 @@
           <div class="col">
             <a href="{{ route('berita.show', $rec->berita->slug) }}" class="text-decoration-none text-dark">
               <div class="card h-100 shadow-sm border-0">
-                <img src="{{ asset('storage/'.$rec->berita->gambar) }}" class="card-img-top img-fluid" alt="{{ $rec->berita->judul }}" style="object-fit: cover;">
+                <div class="image-wrapper">
+              <img src="{{ asset('storage/' . $rec->berita->gambar) }}"  alt="{{ $rec->berita->judul }}">
+            </div>
                 <div class="card-body">
                   <small class="text-muted">{{ $rec->category->nama_liga }}</small>
                   <h6 class="card-title fw-bold mb-2 card-title-limit">{{ Str::limit($rec->berita->judul, 90) }}</h6>

@@ -117,4 +117,43 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
+
+  const input = document.getElementById("searchInput");
+  const resultBox = document.getElementById("searchResults");
+
+  if (input && resultBox) {
+    input.addEventListener("keyup", function () {
+      const query = this.value.trim();
+      if (query.length < 2) {
+        resultBox.style.display = "none";
+        resultBox.innerHTML = "";
+        return;
+      }
+
+      fetch(`/search-json?q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.length > 0) {
+            resultBox.innerHTML = data.map(item => `
+            <a href="/berita/${item.slug}" class="d-block text-dark text-decoration-none">
+              <strong>${item.judul}</strong>
+              <br>
+              <small class="text-muted">${item.category ?? ''}</small>
+            </a>
+          `).join('');
+            resultBox.style.display = "block";
+          } else {
+            resultBox.innerHTML = '<small class="text-muted px-2">Tidak ditemukan</small>';
+            resultBox.style.display = "block";
+          }
+        });
+    });
+
+    // Klik di luar search → sembunyikan hasil
+    document.addEventListener("click", function (e) {
+      if (!document.getElementById("searchForm").contains(e.target)) {
+        resultBox.style.display = "none";
+      }
+    });
+  }
 });
