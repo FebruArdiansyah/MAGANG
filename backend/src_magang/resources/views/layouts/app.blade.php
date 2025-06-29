@@ -38,13 +38,13 @@
       <div class="offcanvas-body" id="navbarMain">
         <!-- Menu (Tengah) -->
         <ul class="navbar-nav mx-auto nav-menu">
-  <li class="nav-item"><a class="nav-link" href="/">News</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-indonesia') }}">Liga Indonesia</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-spanyol') }}">Liga Spanyol</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-inggris') }}">Liga Inggris</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-jerman') }}">Liga Jerman</a></li>
-  <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-italia') }}">Liga Italia</a></li>
-</ul>
+        <li class="nav-item"><a class="nav-link" href="/">News</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-indonesia') }}">Liga Indonesia</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-spanyol') }}">Liga Spanyol</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-inggris') }}">Liga Inggris</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-jerman') }}">Liga Jerman</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('liga.show', 'liga-italia') }}">Liga Italia</a></li>
+      </ul>
 
   
         <!-- Search (Kanan) -->
@@ -66,17 +66,17 @@
     <div class="row g-4">
       <div class="col-md-3">
         <h5>TAUTAN</h5>
-        <p><i class="fa fa-globe me-2"></i>Winnicode</p>
-        <p><i class="fa fa-instagram me-2"></i>Instagram</p>
+        <p><i class="bi bi-globe me-2"></i>Winnicode</p>
+        <p><i class="bi bi-instagram me-2"></i>Instagram</p>
       </div>
       <div class="col-md-3">
         <h5>LINK</h5>
         <p><a href="#" class="text-white text-decoration-none">Beranda</a></p>
-        <p><a href="/liganasional.html" class="text-white text-decoration-none">Liga Nasional</a></p>
-        <p><a href="/ligaspanyol.html" class="text-white text-decoration-none">Liga Spanyol</a></p>
-        <p><a href="/ligainggris.html" class="text-white text-decoration-none">Liga Inggris</a></p>
-        <p><a href="/ligajerman.html" class="text-white text-decoration-none">Liga Jerman</a></p>
-        <p><a href="/ligaitalia.html" class="text-white text-decoration-none">Liga Italia</a></p>
+        <p><a href="{{ route('liga.show', 'liga-indonesia') }}" class="text-white text-decoration-none">Liga Nasional</a></p>
+        <p><a href="{{ route('liga.show', 'liga-spanyol') }}" class="text-white text-decoration-none">Liga Spanyol</a></p>
+        <p><a href="{{ route('liga.show', 'liga-inggris') }}" class="text-white text-decoration-none">Liga Inggris</a></p>
+        <p><a href="{{ route('liga.show', 'liga-jerman') }}" class="text-white text-decoration-none">Liga Jerman</a></p>
+        <p><a href="{{ route('liga.show', 'liga-italia') }}" class="text-white text-decoration-none">Liga Italia</a></p>
       </div>
       <div class="col-md-3">
         <h5>KONTAK KAMI</h5>
